@@ -1,63 +1,3 @@
-# # import graphene
-
-# # class Query(graphene.ObjectType):
-# #     hello = graphene.String(default_value="Hello, GraphQL!")
-
-# # schema = graphene.Schema(query=Query)
-
-
-
-# import graphene
-# from graphql import GraphQLError
-# from .types import ProjectType, TaskType
-# from .models import Organization, Project, Task
-
-
-# class Query(graphene.ObjectType):
-#     projects_by_organization = graphene.List(
-#         ProjectType,
-#         organization_slug=graphene.String(required=True)
-#     )
-
-#     tasks_by_project = graphene.List(
-#         TaskType,
-#         project_id=graphene.ID(required=True),
-#         organization_slug=graphene.String(required=True)
-#     )
-
-#     def resolve_projects_by_organization(self, info, organization_slug):
-#         return Project.objects.filter(
-#             organization__slug=organization_slug
-#         )
-
-#     def resolve_tasks_by_project(self, info, project_id, organization_slug):
-#         try:
-#             project = Project.objects.get(
-#                 id=project_id,
-#                 organization__slug=organization_slug
-#             )
-#         except Project.DoesNotExist:
-#             raise GraphQLError("Project not found for this organization")
-
-#         return project.tasks.all()
-
-
-# import graphene
-# from .mutations import (
-#     CreateProject,
-#     CreateTask,
-#     UpdateTaskStatus,
-#     AddTaskComment,
-# )
-# from .schema import Query  # remove this line if circular import appears
-
-
-# schema = graphene.Schema(query=Query)
-
-
-
-
-
 import graphene
 from graphql import GraphQLError
 
@@ -69,6 +9,9 @@ from .mutations import (
     UpdateTaskStatus,
     AddTaskComment,
 )
+
+from .types import TaskCommentType
+from .models import TaskComment, Task
 
 
 class Query(graphene.ObjectType):
@@ -82,6 +25,18 @@ class Query(graphene.ObjectType):
         project_id=graphene.ID(required=True),
         organization_slug=graphene.String(required=True)
     )
+
+    task_comments = graphene.List(
+        TaskCommentType,
+        task_id=graphene.ID(required=True),
+        organization_slug=graphene.String(required=True),
+    )
+
+    def resolve_task_comments(self, info, task_id, organization_slug):
+        return TaskComment.objects.filter(
+            task__id=task_id,
+            task__project__organization__slug=organization_slug
+        ).order_by("-created_at")
 
     def resolve_projects_by_organization(self, info, organization_slug):
         return Project.objects.filter(
@@ -105,6 +60,7 @@ class Mutation(graphene.ObjectType):
     create_task = CreateTask.Field()
     update_task_status = UpdateTaskStatus.Field()
     add_task_comment = AddTaskComment.Field()
+
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

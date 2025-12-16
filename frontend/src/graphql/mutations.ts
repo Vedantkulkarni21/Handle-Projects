@@ -1,7 +1,5 @@
 import { gql } from "@apollo/client";
 
-/* -------- Tasks -------- */
-
 export const UPDATE_TASK_STATUS = gql`
   mutation UpdateTaskStatus(
     $organizationSlug: String!
@@ -13,9 +11,29 @@ export const UPDATE_TASK_STATUS = gql`
       taskId: $taskId
       status: $status
     ) {
-      task {
+      id
+      status
+    }
+  }
+`;
+
+
+export const ADD_COMMENT = gql`
+  mutation AddTaskComment(
+    $organizationSlug: String!
+    $taskId: ID!
+    $content: String!
+  ) {
+    addTaskComment(
+      organizationSlug: $organizationSlug
+      taskId: $taskId
+      content: $content
+    ) {
+      comment {
         id
-        status
+        content
+        authorEmail
+        createdAt
       }
     }
   }

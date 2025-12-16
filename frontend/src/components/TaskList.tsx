@@ -1,7 +1,8 @@
-
+import { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import { GET_TASKS_BY_PROJECT, GET_PROJECTS } from "../graphql/queries";
 import { UPDATE_TASK_STATUS } from "../graphql/mutations";
+import TaskComments from "./TaskComments";
 
 interface Props {
   projectId: string;
@@ -12,118 +13,70 @@ export default function TaskList({
   projectId,
   organizationSlug,
 }: Props) {
-  const { data, loading, error } = useQuery(
-    GET_TASKS_BY_PROJECT,
-    {
-      variables: { projectId, organizationSlug },
-    }
-  );
+  const [openTaskId, setOpenTaskId] = useState<string | null>(null);
 
-  const [updateStatus] = useMutation(
-    UPDATE_TASK_STATUS,
-    {
-      optimisticResponse: {
-        updateTaskStatus: {
-          __typename: "UpdateTaskStatus",
-          task: {
-            __typename: "TaskType",
-            id: projectId,
-            status: "DONE",
-          },
-        },
-      },
+  const { data, loading, error } = useQuery(GET_TASKS_BY_PROJECT, {
+    variables: { projectId, organizationSlug },
+  });
 
-      update(cache, { data }) {
-        if (!data) return;
+  const [updateStatus] = useMutation(UPDATE_TASK_STATUS);
 
-        /* -------- Update task list -------- */
-        const taskData: any = cache.readQuery({
-          query: GET_TASKS_BY_PROJECT,
-          variables: { projectId, organizationSlug },
-        });
-
-        if (taskData) {
-          cache.writeQuery({
-            query: GET_TASKS_BY_PROJECT,
-            variables: { projectId, organizationSlug },
-            data: {
-              tasksByProject: taskData.tasksByProject.map(
-                (task: any) =>
-                  task.id === data.updateTaskStatus.task.id
-                    ? { ...task, status: "DONE" }
-                    : task
-              ),
-            },
-          });
-        }
-
-        /* -------- Update project counters -------- */
-        const projectData: any = cache.readQuery({
-          query: GET_PROJECTS,
-          variables: { orgSlug: organizationSlug },
-        });
-
-        if (projectData) {
-          cache.writeQuery({
-            query: GET_PROJECTS,
-            variables: { orgSlug: organizationSlug },
-            data: {
-              projectsByOrganization:
-                projectData.projectsByOrganization.map(
-                  (project: any) =>
-                    project.id === projectId
-                      ? {
-                          ...project,
-                          completedTasks:
-                            project.completedTasks + 1,
-                        }
-                      : project
-                ),
-            },
-          });
-        }
-      },
-    }
-  );
-
-  if (loading)
-    return <p className="text-sm text-gray-400 mt-2">Loading tasks...</p>;
-
-  if (error)
-    return <p className="text-sm text-red-500 mt-2">Failed to load tasks</p>;
+  if (loading) return <p className="text-sm text-gray-400">Loading tasks...</p>;
+  if (error) return <p className="text-sm text-red-500">Failed to load tasks</p>;
 
   return (
     <div className="mt-3 space-y-2">
       {data.tasksByProject.map((task: any) => (
         <div
           key={task.id}
-          className="flex justify-between items-center border border-gray-700 rounded p-2"
+          className="border border-gray-700 rounded p-2"
         >
-          <div>
-            <p className="font-medium">{task.title}</p>
-            <span className="text-xs text-gray-400">
-              {task.status}
-            </span>
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="font-medium">{task.title}</p>
+              <span className="text-xs text-gray-400">
+                {task.status}
+              </span>
+            </div>
+
+            {task.status !== "DONE" && (
+              <button
+  onClick={() =>
+    updateStatus({
+      variables: {
+        organizationSlug: organizationSlug,
+        taskId: task.id,
+        status: "DONE",
+      },
+    })
+  }
+  className="text-xs bg-green-600 text-white px-2 py-1 rounded"
+>
+  Mark Done
+</button>
+
+            )}
           </div>
 
-          {task.status !== "DONE" && (
-            <button
-              onClick={() =>
-                updateStatus({
-                  variables: {
-                    organizationSlug,
-                    taskId: task.id,
-                    status: "DONE",
-                  },
-                })
-              }
-              className="text-xs bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded"
-            >
-              Mark Done
-            </button>
+          <button
+            onClick={() =>
+              setOpenTaskId(openTaskId === task.id ? null : task.id)
+            }
+            className="text-xs text-blue-400 mt-1"
+          >
+            {openTaskId === task.id ? "Hide comments" : "View comments"}
+          </button>
+
+          {openTaskId === task.id && (
+            <TaskComments
+              taskId={task.id}
+              organizationSlug={organizationSlug}
+            />
           )}
         </div>
       ))}
     </div>
   );
 }
+
+
