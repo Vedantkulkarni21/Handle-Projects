@@ -1,49 +1,67 @@
-# Handle-Projects
+[readme.md](https://github.com/user-attachments/files/24201556/readme.md)
+# Mini Project Management System
 
-## Mini Project Management System
-A multi-tenant project management tool built using Django + GraphQL + PostgreSQL on the backend and React + TypeScript + Apollo Client + TailwindCSS on the frontend.
-The system includes organizations, projects, tasks, and task comments with proper data isolation and a responsive UI.
+## Full‑Stack Assignment Documentation
+
+---
+
+## Overview
+
+This project is a **multi‑tenant project management system** built using modern full‑stack technologies. It supports organizations, projects, tasks, and task comments with complete CRUD functionality and strict data isolation per organization.
+
+---
 
 ## Features
-Backend (Django + GraphQL)
-Organization-based multi-tenant data isolation
 
-CRUD operations for:
+### Backend (Django + GraphQL)
 
-Projects
+- Organization‑based **multi‑tenant architecture**
+- GraphQL **queries and mutations** for:
+  - Listing projects
+  - Listing tasks by project
+  - Creating projects
+  - Creating tasks
+  - Updating task status
+  - Adding comments to tasks
+- Clean **Django ORM models** with proper relationships
+- Project‑level **statistics**:
+  - Total task count
+  - Completed task count
 
-Tasks
+### Frontend (React + TypeScript)
 
-Comments
+- Organization‑based **project dashboard**
+- Task listing per project
+- Mark tasks as completed
+- Add comments to tasks
+- **Apollo Client** integration with:
+  - Caching
+  - Query and mutation handling
+  - Loading and error states
+- Responsive UI built using **TailwindCSS**
 
-GraphQL API using Graphene
+---
 
-Basic project statistics (task counts, completion rate)
+## Tech Stack
 
-Clean model relationships and validation
+### Backend
 
-Frontend (React + TypeScript)
-Organization dashboard listing all projects
+- Django 4.x
+- Graphene GraphQL
+- PostgreSQL
 
-Project details page displaying tasks
+### Frontend
 
-Task status updates
+- React 18+
+- TypeScript
+- TailwindCSS
+- Apollo Client
 
-Comment system per task
+---
 
-Apollo Client integration with error handling
+## Project Structure
 
-Responsive UI built with TailwindCSS
-
-Loading states and basic form validation
-
-Tech Stack
-Layer	Technology
-Backend	Django 4.x, Graphene GraphQL, PostgreSQL
-Frontend	React 18+, TypeScript, TailwindCSS
-API Client	Apollo Client
-Database	PostgreSQL
-Project Structure
+```text
 backend/
   core/
     models.py
@@ -60,33 +78,65 @@ frontend/
     pages/
     App.tsx
   package.json
-Setup Instructions (Local Development)
-1. Clone Repository
-git clone https://github.com/<your-username>/<your-repo>.git
-cd <your-repo>
-Backend Setup (Django + GraphQL)
-2. Create and Activate Virtual Environment
-cd backend
+```
+
+---
+
+## Setup Instructions
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Vedantkulkarni21/Handle-Projects.git
+```
+---
+
+## Backend Setup (Django + PostgreSQL)
+
+### 2. Create Virtual Environment
+
+```bash
 python -m venv venv
-Activate:
+```
 
-Windows
+#### Activate Environment
 
-venv\Scripts\activate
-macOS/Linux
+- **Windows**
+  ```bash
+  venv\Scripts\activate
+  ```
+- **macOS / Linux**
+  ```bash
+  source venv/bin/activate
+  ```
 
-source venv/bin/activate
-3. Install Dependencies
+---
+
+### 3. Install Dependencies
+
+```bash
 pip install -r requirements.txt
-If requirements.txt is missing:
+```
 
+If `requirements.txt` is missing:
+
+```bash
 pip freeze > requirements.txt
-4. Configure PostgreSQL
-Create database:
+```
 
+---
+
+### 4. Configure PostgreSQL
+
+#### Create Database
+
+```sql
 CREATE DATABASE project_management;
-Update settings.py:
+```
 
+#### Update `settings.py`
+
+```python
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -97,72 +147,111 @@ DATABASES = {
         "PORT": "5432",
     }
 }
-5. Apply Migrations
-python manage.py migrate
-6. Start Backend Server
-python manage.py runserver
-Backend will be available at:
+```
 
+---
+
+### 5. Run Migrations
+
+```bash
+python manage.py migrate
+```
+
+---
+
+### 6. Start Backend Server
+
+```bash
+cd backend
+python manage.py runserver
+```
+
+#### GraphQL Endpoint
+
+```
 http://127.0.0.1:8000/graphql/
-Frontend Setup (React + TypeScript)
-7. Install Dependencies
+```
+
+---
+
+## Frontend Setup (React + TypeScript)
+
+### 7. Install Dependencies
+
+```bash
 cd frontend
 npm install
-8. Start Frontend
+```
+
+---
+
+### 8. Start Frontend Server
+
+```bash
 npm run dev
-Frontend will be available at:
+```
 
+#### Frontend URL
+
+```
 http://localhost:5173
-GraphQL API Overview
-Queries
-projectsByOrganization
+```
 
-tasksByProject
+---
 
-taskComments
+## GraphQL API Overview
 
-Mutations
-createProject
+### Queries
 
-createTask
+- `projectsByOrganization`
+- `tasksByProject`
+- `taskComments`
 
-updateTaskStatus
+### Mutations
 
-addTaskComment
+- `createProject`
+- `createTask`
+- `updateTaskStatus`
+- `addTaskComment`
 
-(If you want, a full schema reference can be added.)
+---
 
-Demo Video
-A demonstration video is included showcasing:
+## Demonstration
 
-Organization dashboard
+A demo video is included that showcases:
 
-Creating projects and tasks
+- Creating projects
+- Listing tasks
+- Updating task status
+- Adding task comments
+- Multi‑tenant organization separation
 
-Updating task status
+---
 
-Adding task comments
+## Technical Notes
 
-Multi-tenant isolation behavior
+### Design Decisions
 
-Technical Summary
-Design Decisions
-GraphQL chosen for flexible querying and reduced over-fetching
+- GraphQL chosen for **flexible frontend data requirements**
+- Organization slug used for **tenant isolation**
+- Apollo Client cache improves performance and UX
+- Clean separation of **backend and frontend concerns**
 
-Organization slug used for multi-tenancy
+---
 
-Apollo Client caching improves responsiveness
+## Future Improvements
 
-Backend and frontend separated for clean architecture
+- Authentication using JWT
+- Drag‑and‑drop task board
+- Real‑time comments using WebSockets
+- Docker Compose setup
+- CI/CD pipeline and automated testing
 
-Future Improvements
-Authentication using JWT
+---
 
-Task board drag-and-drop
+## Author
 
-Live comments via WebSockets
+**Vedant Kulkarni**
 
-Docker Compose for full containerized setup
-
-More advanced project analytics
+Full Stack Developer
 
