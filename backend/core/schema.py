@@ -10,6 +10,7 @@ from .mutations import (
     AddTaskComment,
 )
 
+
 from .types import TaskCommentType
 from .models import TaskComment, Task
 
@@ -56,10 +57,13 @@ class Query(graphene.ObjectType):
 
 
 class Mutation(graphene.ObjectType):
-    create_project = CreateProject.Field()
-    create_task = CreateTask.Field()
-    update_task_status = UpdateTaskStatus.Field()
-    add_task_comment = AddTaskComment.Field()
+    updateTaskStatus = UpdateTaskStatus.Field()
+    addTaskComment = AddTaskComment.Field()
+    createProject = CreateProject.Field()
+    createTask = CreateTask.Field()
+
+    
+    
 
 
 

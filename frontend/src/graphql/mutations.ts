@@ -11,11 +11,14 @@ export const UPDATE_TASK_STATUS = gql`
       taskId: $taskId
       status: $status
     ) {
-      id
-      status
+      task { 
+        id
+        status
+      }
     }
   }
 `;
+
 
 
 export const ADD_COMMENT = gql`

@@ -3,6 +3,7 @@ from graphql import GraphQLError
 from .models import Organization, Project, Task, TaskComment
 from .types import ProjectType, TaskType, TaskCommentType
 
+
 class CreateProject(graphene.Mutation):
     class Arguments:
         organization_slug = graphene.String(required=True)
@@ -56,6 +57,29 @@ class CreateTask(graphene.Mutation):
         )
         return CreateTask(task=task)
 
+
+class UpdateTaskStatus(graphene.Mutation):
+    class Arguments:
+        organization_slug = graphene.String(required=True)
+        task_id = graphene.ID(required=True)
+        status = graphene.String(required=True)
+
+    task = graphene.Field(TaskType)
+
+    def mutate(self, info, organization_slug, task_id, status):
+        try:
+            task = Task.objects.get(
+                id=task_id,
+                project__organization__slug=organization_slug
+            )
+        except Task.DoesNotExist:
+            raise GraphQLError("Task not found for this organization")
+
+        task.status = status
+        task.save()
+        return UpdateTaskStatus(task=task)
+
+
 class AddTaskComment(graphene.Mutation):
     class Arguments:
         organization_slug = graphene.String(required=True)
@@ -76,8 +100,7 @@ class AddTaskComment(graphene.Mutation):
         comment = TaskComment.objects.create(
             task=task,
             content=content,
-            author_email="you@example.com"  # temp / later from auth
+            author_email="you@example.com"
         )
 
         return AddTaskComment(comment=comment)
-    
